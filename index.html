@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="index.css" />
+</head>
+<body ng-controller="reportGraphController as reportGraphCtrl">
+
+<div class="select-chart-options" >
+  <div ng-click="reportGraphCtrl.graphData.chartType=1"
+       ng-class="{'active':reportGraphCtrl.graphData.chartType== 1}">
+   Line Chart
+  </div>
+  <div ng-click="reportGraphCtrl.graphData.chartType=2"
+       ng-class="{'active':reportGraphCtrl.graphData.chartType== 2}">
+    Bar Chart
+  </div>
+  <ul class="select-axes-options">
+    <li ng-click="reportGraphCtrl.graphData.chartScale=1;
+                  reportGraphCtrl.plotDateAxis(reportGraphCtrl.inputGraphData_,1)"
+        ng-class="{'active':reportGraphCtrl.graphData.chartScale== 1}">Days</li>
+    <li ng-click="reportGraphCtrl.graphData.chartScale=7;
+                  reportGraphCtrl.plotDateAxis(reportGraphCtrl.inputGraphData_,7)"
+        ng-class="{'active':reportGraphCtrl.graphData.chartScale== 7}">Weeks</li>
+    <li ng-click="reportGraphCtrl.graphData.chartScale=14;
+                  reportGraphCtrl.plotDateAxis(reportGraphCtrl.inputGraphData_,14)"
+        ng-class="{'active':reportGraphCtrl.graphData.chartScale== 14}">Bi-Weekly</li>
+    <li ng-click="reportGraphCtrl.graphData.chartScale=30;
+                  reportGraphCtrl.plotDateAxis(reportGraphCtrl.inputGraphData_,30)"
+        ng-class="{'active':reportGraphCtrl.graphData.chartScale== 30}">Monthly</li>
+    <li ng-click="reportGraphCtrl.graphData.chartScale=90;
+                  reportGraphCtrl.plotDateAxis(reportGraphCtrl.inputGraphData_,90)"
+        ng-class="{'active':reportGraphCtrl.graphData.chartScale== 90}">Quaters</li>
+  </ul>
+</div>
+
+<svg height="400" width="1223">
+  <g 
+     style="transform: translateY(-20px);">
+  <path fill="none" stroke="#000000" ng-attr-d='{{reportGraphCtrl.axisGrid_}}'
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity:.1;"></path>
+  <path fill="none" stroke="#000000" ng-attr-d='{{reportGraphCtrl.xAxisNames_}}'
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity: 1;"></path>
+  <path fill="none" stroke="#000000" ng-attr-d='{{reportGraphCtrl.xItemsScaleNeedlePath_}}'
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity: 1;"></path>
+  <path fill="none" stroke="#000000" ng-show="reportGraphCtrl.showKPI1Scale_!=-1"
+        ng-attr-d='{{reportGraphCtrl.yItemsScaleKpi1}}'
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity: 1;"></path>
+  <path fill="none" stroke="#000000" ng-show="reportGraphCtrl.showKPI2Scale_!=-1"
+        ng-attr-d='{{reportGraphCtrl.yItemsScaleKpi2}}'
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity: 1;"></path>
+  <path ng-attr-d='{{reportGraphCtrl.linePath1_}}' fill="none"
+        ng-show="reportGraphCtrl.graphData.chartType== 1 && reportGraphCtrl.showKPI1Scale_!=-1"
+        style="stroke-width: 2px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               stroke: rgba(0, 136, 255, 0.7)"></path>
+  <path ng-attr-d='{{reportGraphCtrl.linePath2_}}' fill="none"
+        ng-show="reportGraphCtrl.graphData.chartType== 1 && reportGraphCtrl.showKPI2Scale_!=-1"
+        style="stroke-width: 2px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               stroke: rgba(255, 133, 0, 0.5)"></path>
+  <path ng-attr-d='{{reportGraphCtrl.barPath1_}}'
+        ng-show="reportGraphCtrl.graphData.chartType== 2 && reportGraphCtrl.showKPI1Scale_!=-1"
+        style="stroke-width: 1px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               fill: rgba(0, 136, 255, 0.7);stroke: rgba(0, 136, 255, 0.7)"></path>
+  <path ng-attr-d='{{reportGraphCtrl.barPath2_}}'
+        ng-show="reportGraphCtrl.graphData.chartType== 2 && reportGraphCtrl.showKPI2Scale_!=-1"
+        style="stroke-width: 0px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               fill: rgba(255, 133, 0, 0.5);stroke: rgba(255, 133, 0, 0.5)"></path>
+  <text ng-attr-x="{{dateRange.x}}" y="390"
+        style="font-size:10px" ng-repeat="dateRange in reportGraphCtrl.xAxisNamesObject_">
+    {{dateRange.text}}</text>
+  <g ng-repeat="xAxisDateText in reportGraphCtrl.xAxisDateTextArray_">
+    <g ng-repeat="textItem in xAxisDateText">
+    <text ng-attr-x="{{textItem.x-5}}" y="370" style="font-size:10px">
+    {{textItem.text}}</text>
+    <rect ng-mouseenter="reportGraphCtrl.showTooltip(textItem)"
+          ng-mouseleave="reportGraphCtrl.showtoolTip_ = false"
+          ng-click="reportGraphCtrl.createDataPoint(textItem)"
+          ng-attr-x="{{textItem.x-reportGraphCtrl.needleGap_/2}}" y="0" stroke="none" fill="#ffffff"
+          opacity="0" ng-attr-width="{{reportGraphCtrl.needleGap_}}" height="354" ></rect>
+     </g>
+  </g>
+  <g>
+    <text ng-attr-y="{{textItem.y}}" x="21"
+          ng-show="reportGraphCtrl.showKPI1Scale_!=-1"
+        style="font-size:10px" ng-repeat="textItem in reportGraphCtrl.itemsYAxisText_">
+    {{textItem.text}}</text>
+  </g>
+  <g>
+    <text ng-attr-y="{{textItem.y}}" x="1190"
+          ng-show="reportGraphCtrl.showKPI2Scale_!=-1"
+        style="font-size:10px" ng-repeat="textItem in reportGraphCtrl.itemsYAxisText_">
+    {{textItem.text}}</text>
+  </g>
+  <path fill="rgb(0, 136, 255)" ng-attr-d='{{reportGraphCtrl.lineChartCircles1_}}'
+          ng-show="reportGraphCtrl.graphData.chartType== 1 && reportGraphCtrl.showKPI1Scale_!=-1"
+          stroke="#666666" stroke-width="1"></path>
+  <path fill="rgb(255, 133, 0)" ng-attr-d='{{reportGraphCtrl.lineChartCircles2_}}'
+        ng-show="reportGraphCtrl.graphData.chartType== 1 && reportGraphCtrl.showKPI2Scale_!=-1"
+          stroke="#666666" stroke-width="1"></path>
+  </g>
+  <g>
+    <path ng-attr-d='{{reportGraphCtrl.selectedCHCircles_}}'
+        style="stroke-width: 2px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               fill: rgb(224, 114, 114);stroke: rgba(19, 18, 17, 0.55)"></path>
+    <path ng-attr-d='{{reportGraphCtrl.selectedTaskCircles_}}'
+        style="stroke-width: 2px;vector-effect: non-scaling-stroke;stroke-opacity: 1;
+               fill: rgba(34, 210, 64, 0.58);stroke: rgba(19, 18, 17, 0.55)"></path>
+    <g>
+    <text ng-attr-y="{{textItem.y}}" ng-attr-x="{{textItem.x}}"
+        style="font-size: 14px; font-weight: bold; fill: rgba(0, 0, 0, 0.62);text-anchor: middle;"
+          ng-repeat="textItem in reportGraphCtrl.selectedCirclesText_">
+    {{textItem.text}}</text>
+  </g>
+   <g ng-show="reportGraphCtrl.showKPI1Scale_!=-1 && reportGraphCtrl.showtoolTip_" 
+      ng-mouseenter="reportGraphCtrl.showtoolTip_ = true">
+    <path fill="rgb(136, 200, 255)" stroke="#666666" d="M355,82H377.25H399.5H421.75H444A5,5,0,0,1,449,87V94V101V108V115A5,5,0,0,1,444,120H421.75H399.5H377.25H355A5,5,0,0,1,350,115L350,111L340,101L350,91L350,87A5,5,0,0,1,355,82Z"
+          stroke-width="2" fill-opacity="0.7"
+          ng-style="reportGraphCtrl.transformObj_.kpi1.transformMatrix_"
+          style="fill-opacity: 0.7;transition: transform .2s linear"></path>
+    <text x="355" y="82"
+          style="transition: transform .2s linear;font-size: 11px; font-weight: bold; fill: rgba(0, 0, 0, 0.62);text-anchor: middle;"
+          ng-style="reportGraphCtrl.transformObj_.kpi1.transformMatrix_">
+      <tspan dx="54px" dy="15px">{{reportGraphCtrl.transformObj_.kpi1.text}}</tspan>
+      <tspan dx="-47px" dy="16px">{{reportGraphCtrl.transformObj_.date}}</tspan>
+    </text>
+   </g>
+    <g ng-show="reportGraphCtrl.showKPI2Scale_!=-1 && reportGraphCtrl.showtoolTip_" ng-mouseenter="reportGraphCtrl.showtoolTip_ = true">
+    <path fill="rgb(255, 181, 100)" stroke="#666666" d="M355,82H377.25H399.5H421.75H444A5,5,0,0,1,449,87V94V101V108V115A5,5,0,0,1,444,120H421.75H399.5H377.25H355A5,5,0,0,1,350,115L350,111L340,101L350,91L350,87A5,5,0,0,1,355,82Z"
+          stroke-width="2" fill-opacity="0.7"
+          ng-style="reportGraphCtrl.transformObj_.kpi2.transformMatrix_"
+          style="transition: transform .2s linear;fill-opacity: 0.7;"></path>
+    <text x="355" y="82"
+          style="font-size: 11px;transition: transform .2s linear; font-weight: bold; fill: rgba(0, 0, 0, 0.62);text-anchor: middle;"
+          ng-style="reportGraphCtrl.transformObj_.kpi2.transformMatrix_">
+      <tspan dx="54px" dy="15px">{{reportGraphCtrl.transformObj_.kpi2.text}}</tspan>
+      <tspan dx="-47px" dy="16px">{{reportGraphCtrl.transformObj_.date}}</tspan>
+    </text>
+   </g>
+  </g>
+</svg>
+
+<script src="https://code.angularjs.org/1.5.7/angular.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

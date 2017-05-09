@@ -1,0 +1,43 @@
+.select-axes-options {
+      list-style-type: none;
+    margin: 0px;
+  padding:0px;
+    display: inline-block;
+    float: right;
+    text-align: center;
+    font-size: 13px;
+}
+.select-axes-options li{
+  font-size: 13px;
+    cursor: pointer;
+    margin-left: 0px;
+  padding: 12px 20px;
+    border: 1px solid #e8edf6;
+  min-width: 80px;
+  display:inline-block;
+  color: #40a0bd;
+}
+.select-chart-options div{
+    font-size: 13px;
+    padding: 8px 20px;
+    min-width: 80px;
+    border: 1px solid #e8edf6;
+  display:inline-block;
+  color: #40a0bd;
+  cursor: pointer;
+}
+
+.select-chart-options md-icon{
+  padding-right:6px;
+  color: #40a0bd;
+}
+.select-chart-options .active md-icon{
+  color:#e45e2e;
+}
+.select-chart-options {
+  padding:10px 20px;
+}
+.select-chart-options .active {
+    background: #eee;
+    color: #e45e2e;
+}
